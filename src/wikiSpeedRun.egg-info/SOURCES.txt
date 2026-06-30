@@ -1,0 +1,10 @@
+pyproject.toml
+src/wikiSpeedRun/__init__.py
+src/wikiSpeedRun/config.py
+src/wikiSpeedRun/main.py
+src/wikiSpeedRun.egg-info/PKG-INFO
+src/wikiSpeedRun.egg-info/SOURCES.txt
+src/wikiSpeedRun.egg-info/dependency_links.txt
+src/wikiSpeedRun.egg-info/entry_points.txt
+src/wikiSpeedRun.egg-info/requires.txt
+src/wikiSpeedRun.egg-info/top_level.txt
