@@ -1,3 +1,3 @@
-START_URL = "https://en.wikipedia.org/wiki/Ramen"
-TARGET_TITLE = "Philosophy"   # classic wiki game goal
-MAX_STEPS = 20
+START_URL = "https://en.wikipedia.org/wiki/C._Joseph_Vijay"
+TARGET_TITLE = "Mahatma Gandhi"
+MAX_STEPS = 2000
