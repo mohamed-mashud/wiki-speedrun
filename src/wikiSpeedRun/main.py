@@ -52,7 +52,7 @@ def current_path(page) -> str:
 def run_agent():
     with sync_playwright() as p:
         target_word_embedding = get_word_embeddings(TARGET_TITLE)
-        browser = p.chromium.launch(headless=False)  
+        browser = p.chromium.launch(headless=True)  
         page = browser.new_page(
             user_agent=(
                 "wikiSpeedRun/0.1 (https://github.com/wikiSpeedRun; "
@@ -119,25 +119,20 @@ def get_word_embeddings(word : str | list[str]):
     return MODEL.encode(word, convert_to_numpy=True, normalize_embeddings=True)
 
 def get_best_embedded_link(visited, embedded_links, links, target_embedding):
-    max_val = -1
-    best_embedded_link = None
+    embedded_links = np.asarray(embedded_links)  # shape (N, dim)
 
-    for link_indx in range(0, len(embedded_links)):
-        link = links[link_indx]
-        if link["href"] not in visited:
-            curr_val = cosine_similarity(target_embedding, embedded_links[link_indx])
-            if curr_val > max_val:
-                max_val = curr_val
-                best_embedded_link = link
-    
-    if best_embedded_link is None:
+    # cosine sim == dot product since embeddings are unit-normalized
+    sims = embedded_links @ target_embedding      # shape (N,)
+
+    visited_mask = np.array([link["href"] in visited for link in links])
+    sims[visited_mask] = -np.inf                  # mask out visited links
+
+    if np.all(visited_mask):
         print("=========All links visited, picking first unvisited link==========")
-        for link in links:
-            if link["href"] not in visited:
-                best_embedded_link = link
-                break
+        return None  # keeps your existing fallback-to-links[0] behavior
 
-    return best_embedded_link
+    best_idx = int(np.argmax(sims))
+    return links[best_idx]
 
 def cosine_similarity(embedding1, embedding2):
     return np.dot(embedding1, embedding2) / (norm(embedding1) * norm(embedding2))
